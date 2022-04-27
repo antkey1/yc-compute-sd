@@ -1,0 +1,8 @@
+exclude_dirs:
+  - __pycache__
+  - .tox
+  - .vscode
+  - static
+  - tests
+  - .venv
+  - venv

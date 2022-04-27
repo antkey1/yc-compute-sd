@@ -1,0 +1,6 @@
+pytest
+pytest-env
+tox
+tox-battery
+bandit
+flake8
