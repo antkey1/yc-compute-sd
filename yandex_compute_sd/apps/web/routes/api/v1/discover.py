@@ -45,8 +45,17 @@ async def get_discover(
         if instance.metadata:
             labels.update(instance.metadata)
 
+        keys_to_pop = []
+        new_items = dict()
         for k, v in labels.items():
-            labels[k] = v.replace('-', '_')
+            new_key = k.replace('-', '_')
+            new_items[new_key] = v
+            keys_to_pop.append(k)
+
+        for key in keys_to_pop:
+            labels.pop(key)
+
+        labels.update(new_items)
 
         response.append(
             GetDiscoverResponse(
