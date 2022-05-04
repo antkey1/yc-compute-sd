@@ -45,6 +45,9 @@ async def get_discover(
         if instance.metadata:
             labels.update(instance.metadata)
 
+        for k, v in labels.items():
+            labels[k] = v.replace('-', '_')
+
         response.append(
             GetDiscoverResponse(
                 targets=[address],
