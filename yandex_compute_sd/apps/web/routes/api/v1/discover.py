@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from fastapi import APIRouter, Depends
 
-from yandex_compute_sd.libs.yandex import IAMToken, list_instances
+from yandex_compute_sd.libs.yandex import IAMToken, ComputeCloud
 from yandex_compute_sd.apps.web.deps import yc_iam_token
 from yandex_compute_sd.apps.settings import settings
 
@@ -21,10 +21,11 @@ class GetDiscoverResponse(BaseModel):
 async def get_discover(
         iam: IAMToken = Depends(yc_iam_token),
 ) -> list[GetDiscoverResponse]:
-    instances = list_instances(
+    cc = ComputeCloud(
         iam_token=iam.iamToken,
         folder_id=settings.folder_id,
     )
+    instances = cc.list_instances()
 
     response = []
     for instance in instances:
