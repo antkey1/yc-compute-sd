@@ -1,6 +1,9 @@
 Changelog
 ===
 
+# 0.1.1
+* `node_exporter` default port (`9100`) in `GET /api/v1/discover` response
+
 # 0.1.0
 * Managed-k8s instances discovery
 

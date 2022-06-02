@@ -30,6 +30,10 @@ async def get_discover(
     response = []
     for instance in instances:
         address = instance.networkInterfaces[0].primaryV4Address.address
+
+        # add default node_exporter port
+        address = address + ':9100'
+
         labels = dict(
             id=instance.id,
             folder_id=instance.folderId,
