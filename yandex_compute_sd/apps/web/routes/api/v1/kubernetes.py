@@ -52,9 +52,13 @@ def get_instances(
             network_interfaces = []
             for network_interface in instance.networkInterfaces:
                 primary_v4 = network_interface.primaryV4Address
+                private_ip = primary_v4.address
+                public_ip = primary_v4.oneToOneNat.address \
+                    if primary_v4.oneToOneNat else None
+
                 network_interfaces.append(NodeNetworkInterface(
-                    private=primary_v4.address,
-                    public=primary_v4.oneToOneNat.address,
+                    private=private_ip,
+                    public=public_ip,
                 ))
 
             nodes.append(
