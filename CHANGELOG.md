@@ -1,6 +1,9 @@
 Changelog
 ===
 
+# 0.2.0
+* Added new way to explore exporters ports (via yc instance labels)
+
 # 0.1.2
 bugfix:
 * In k8s node service discovery fix cases, when node hasn't public ip\
