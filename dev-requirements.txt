@@ -1,6 +1,6 @@
 pytest
 pytest-env
-tox
+tox<4
 tox-battery
 bandit
 flake8
