@@ -31,42 +31,68 @@ async def get_discover(
     for instance in instances:
         address = instance.networkInterfaces[0].primaryV4Address.address
 
-        # add default node_exporter port
-        address = address + ':9100'
-
         labels = dict(
-            id=instance.id,
-            folder_id=instance.folderId,
-            zone_id=instance.zoneId,
-            fqdn=instance.fqdn,
+            yc_id=instance.id,
+            yc_folder_id=instance.folderId,
+            yc_zone_id=instance.zoneId,
+            yc_fqdn=instance.fqdn,
         )
 
         if instance.name:
-            labels['name'] = instance.name
+            labels['hostname'] = instance.name
 
+        exporter_ports = []
+        job_name = None
         if instance.labels:
-            labels.update(instance.labels)
+            for label_key, label_value in instance.labels.items():
+                # Get exporters ports
+                if all([
+                    label_key.startswith('prometheus_'),
+                    label_key.endswith('_port'),
+                ]):
+                    label_value_int = None
+                    try:
+                        label_value_int = int(label_value)
+                    except ValueError:
+                        pass
 
-        if instance.metadata:
-            labels.update(instance.metadata)
+                    if label_value_int in range(0, 65537):
+                        exporter_ports.append(label_value)
 
+                # Get job name
+                if label_key == 'prometheus_job':
+                    job_name = label_value
+
+        if job_name:
+            labels['job'] = job_name
+        else:
+            continue
+
+        # if instance.metadata:
+        #     labels.update(instance.metadata)
+
+        # Clean label names (replace "-" by "_")
         keys_to_pop = []
         new_items = dict()
         for k, v in labels.items():
             new_key = k.replace('-', '_')
             new_items[new_key] = v
             keys_to_pop.append(k)
-
         for key in keys_to_pop:
             labels.pop(key)
-
         labels.update(new_items)
 
-        response.append(
-            GetDiscoverResponse(
-                targets=[address],
-                labels=labels,
+        # Build targets list
+        targets = [
+            f'{address}:{exporter_port}' for exporter_port in exporter_ports
+        ]
+
+        if targets:
+            response.append(
+                GetDiscoverResponse(
+                    targets=targets,
+                    labels=labels,
+                )
             )
-        )
 
     return response
